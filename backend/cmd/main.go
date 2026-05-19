@@ -5,6 +5,7 @@ import (
 
 	"fleetify-backend/database"
 	"fleetify-backend/models"
+	"fleetify-backend/seeders"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,12 +16,14 @@ func main() {
 	database.ConnectDatabase()
 
 	database.DB.AutoMigrate(
-	&models.User{},
-	&models.Vehicle{},
-	&models.MasterItem{},
-	&models.MaintenanceReport{},
-	&models.ReportItem{},
-)
+		&models.User{},
+		&models.Vehicle{},
+		&models.MasterItem{},
+		&models.MaintenanceReport{},
+		&models.ReportItem{},
+	)
+
+	seeders.SeedData()
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
