@@ -4,6 +4,7 @@ import (
 	"fleetify-backend/database"
 	"fleetify-backend/dto"
 	"fleetify-backend/models"
+	"fleetify-backend/services"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -121,6 +122,8 @@ func ApproveReport(c *fiber.Ctx) error {
 		})
 	}
 
+	go services.SendStatusWebhook(report.ID, report.Status)
+
 	return c.JSON(fiber.Map{
 		"message": "Report approved successfully",
 	})
@@ -167,7 +170,9 @@ func CompleteReport(c *fiber.Ctx) error {
 		})
 	}
 
+	go services.SendStatusWebhook(report.ID, report.Status)
+
 	return c.JSON(fiber.Map{
 		"message": "Report completed successfully",
-	})
+	})	
 }
