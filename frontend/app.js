@@ -3,6 +3,7 @@ const API_URL = "http://localhost:8080/api";
 const vehicleSelect = document.getElementById("vehicle");
 const reportTableBody = document.querySelector("#reportTable tbody");
 const reportForm = document.getElementById("reportForm");
+const exportCsvBtn = document.getElementById("exportCsvBtn");
 
 function clearElement(element) {
     while (element.firstChild) {
@@ -69,6 +70,50 @@ async function fetchReports() {
     }
 }
 
+async function exportCSV() {
+    try {
+        const response = await fetch(`${API_URL}/reports`);
+        const result = await response.json();
+
+        const reports = result.data;
+
+        let csvContent =
+            "ID,Vehicle,Status,Complaint,Odometer\n";
+
+        reports.forEach((report) => {
+            csvContent +=
+                `${report.ID},` +
+                `${report.Vehicle.LicensePlate},` +
+                `${report.Status},` +
+                `"${report.Complaint}",` +
+                `${report.Odometer}\n`;
+        });
+
+        const blob = new Blob(
+            [csvContent],
+            { type: "text/csv" }
+        );
+
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "fleetify-reports.csv";
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+
+        window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+        console.error("Failed to export CSV", error);
+    }
+}
+
 reportForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -113,3 +158,4 @@ reportForm.addEventListener("submit", async (e) => {
 
 fetchVehicles();
 fetchReports();
+exportCsvBtn.addEventListener("click", exportCSV);
