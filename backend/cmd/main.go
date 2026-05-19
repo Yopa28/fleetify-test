@@ -5,6 +5,7 @@ import (
 
 	"fleetify-backend/database"
 	"fleetify-backend/models"
+	"fleetify-backend/routes"
 	"fleetify-backend/seeders"
 
 	"github.com/gofiber/fiber/v2"
@@ -30,6 +31,8 @@ func main() {
 			"message": "Fleetify API Running",
 		})
 	})
+
+	routes.ReportRoutes(app)
 
 	log.Fatal(app.Listen(":8080"))
 }
