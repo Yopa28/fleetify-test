@@ -12,3 +12,7 @@ type CreateReportRequest struct {
 	InitialPhoto string                    `json:"initial_photo"`
 	Items        []CreateReportItemRequest `json:"items"`
 }
+
+type CompleteReportRequest struct {
+	ProofPhoto string `json:"proof_photo"`
+}

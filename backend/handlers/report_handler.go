@@ -73,3 +73,101 @@ func CreateReport(c *fiber.Ctx) error {
 		"message": "Report created successfully",
 	})
 }
+
+func GetReports(c *fiber.Ctx) error {
+	var reports []models.MaintenanceReport
+
+	if err := database.DB.
+		Preload("Vehicle").
+		Preload("User").
+		Preload("ReportItems.MasterItem").
+		Order("created_at DESC").
+		Find(&reports).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to get reports",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Reports retrieved successfully",
+		"data":    reports,
+	})
+}
+
+func ApproveReport(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	var report models.MaintenanceReport
+
+	if err := database.DB.First(&report, id).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Report not found",
+		})
+	}
+
+	if report.Status != "PENDING_APPROVAL" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Only pending reports can be approved",
+		})
+	}
+
+	report.Status = "APPROVED"
+
+	if err := database.DB.Save(&report).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to approve report",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Report approved successfully",
+	})
+}
+
+func CompleteReport(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	var request dto.CompleteReportRequest
+
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid request body",
+		})
+	}
+
+	if request.ProofPhoto == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "proof_photo is required",
+		})
+	}
+
+	var report models.MaintenanceReport
+
+	if err := database.DB.First(&report, id).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Report not found",
+		})
+	}
+
+	if report.Status != "APPROVED" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Only approved reports can be completed",
+		})
+	}
+
+	report.Status = "COMPLETED"
+	report.ProofPhoto = request.ProofPhoto
+
+	if err := database.DB.Save(&report).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to complete report",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Report completed successfully",
+	})
+}
