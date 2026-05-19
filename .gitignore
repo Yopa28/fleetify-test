@@ -1,0 +1,85 @@
+# ==========================================
+# 1. Env & Sensitive Files (Security First)
+# ==========================================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+credentials*
+secret*
+passwd
+*.token
+
+# ==========================================
+# 2. Go (Backend)
+# ==========================================
+# Binaries and templates
+backend/bin/
+backend/main
+backend/main.exe
+backend/*.exe
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test coverage
+*.out
+*.test
+*.prof
+
+# ==========================================
+# 3. Node / Frontend
+# ==========================================
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+build/
+.next/
+.nuxt/
+out/
+.cache/
+
+# Package logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==========================================
+# 4. Database & Docker (Local Data)
+# ==========================================
+mysql-data/
+db-data/
+.docker-data/
+docker/data/
+data/
+
+# ==========================================
+# 5. OS & IDE
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+ehthumbs.db
+Thumbs.db
+
+# JetBrains IDEs
+.idea/
+*.iml
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Temporary files
+tmp/
+temp/
